@@ -1,0 +1,29 @@
+{
+  "name": "availability-js",
+  "version": "1.0.0",
+  "description": "A package for managing user availability across multiple time zones efficiently.",
+  "author": "Subhan Ahmed",
+  "license": "MIT",
+  "private": true,
+  "files": [
+    "dist",
+    "package.json"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "devDependencies": {
+    "tsup": "^8.3.5",
+    "typescript": "^5.7.3"
+  },
+   "scripts": {
+    "build": "tsup ./src"
+  }
+}
