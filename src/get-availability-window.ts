@@ -25,68 +25,55 @@ export const getAvailabilityWindow = ({
     timezone: targetTimezone,
     override
 }: AvailabilityParams): AvailabilityWindow | null => {
-
-    // If there's an override marking the day as unavailable, return null
     if (override && !override.isAvailable) {
         return null;
     }
 
     const { schedule, timezone: sourceTimezone, options } = weeklySchedule;
-    let availableFrom = null; // Optional earliest available time
-    let availableUntil = null; // Optional latest available time
 
-    if (options) {
-        availableFrom = options.from;
-        availableUntil = options.until;
-    }
-
-    // Calculate the start and end of the day in the target timezone
+    // Precompute bounds
     const targetDayStart = startOfDay(date);
     const targetDayEnd = endOfDay(date);
-
-    // Calculate the start of the day in the source timezone
     const sourceDayStart = toZonedTime(fromZonedTime(targetDayStart, targetTimezone), sourceTimezone);
 
-    // Convert availability bounds (if defined) from source to target timezone
-    const targetAvailableFrom = availableFrom ?
-        toZonedTime(availableFrom, targetTimezone) :
-        null;
+    const targetAvailableFrom = options?.from
+        ? toZonedTime(options.from, targetTimezone)
+        : null;
 
-    const targetAvailableUntil = availableUntil ?
-        toZonedTime(availableUntil, targetTimezone) :
-        null;
+    const targetAvailableUntil = options?.until
+        ? toZonedTime(options.until, targetTimezone)
+        : null;
 
-    const availableWindows: { start: Date; end: Date; }[] = [];
+    // Precompute day schedule map
+    const dayScheduleMap = schedule.reduce((map, s) => {
+        map[s.dayOfWeek] = map[s.dayOfWeek] || [];
+        map[s.dayOfWeek].push(s);
+        return map;
+    }, {} as Record<string, TimeRange[]>);
 
-    // Iterate over the day and the next day to consider overlapping schedules
-    for (const sourceDate of [sourceDayStart, addDays(sourceDayStart, 1)]) {
-        // Get time ranges from the override or default schedule for the day
-        const timeRanges = override?.timeRanges ?? schedule.filter(s =>
-            s.dayOfWeek === format(sourceDate, 'EEEE')
-        );
+    const availableWindows: { start: Date; end: Date }[] = [];
+
+    const sourceDates = [sourceDayStart, addDays(sourceDayStart, 1)]; // Overnight support
+    for (const sourceDate of sourceDates) {
+        const timeRanges = override?.timeRanges ?? dayScheduleMap[format(sourceDate, 'EEEE')];
 
         for (const timeRange of timeRanges ?? []) {
             const [startHour, startMinute] = timeRange.start.split(':');
             const [endHour, endMinute] = timeRange.end.split(':');
 
-            // Create date objects for the start and end times in the source timezone
             const startDate = new Date(sourceDate);
             startDate.setHours(parseInt(startHour), parseInt(startMinute), 0, 0);
 
             const endDate = new Date(sourceDate);
             endDate.setHours(parseInt(endHour), parseInt(endMinute), 0, 0);
 
-            // Convert the source start and end times to the target timezone
             const startInTarget = toZonedTime(fromZonedTime(startDate, sourceTimezone), targetTimezone);
             const endInTarget = toZonedTime(fromZonedTime(endDate, sourceTimezone), targetTimezone);
 
-            // Check if the time range overlaps with the target day
             if (startInTarget <= targetDayEnd && endInTarget >= targetDayStart) {
-                // Clamp the start and end times to the day boundaries
                 let clampedStart = startInTarget < targetDayStart ? targetDayStart : startInTarget;
                 let clampedEnd = endInTarget > targetDayEnd ? targetDayEnd : endInTarget;
 
-                // Apply optional availability constraints
                 if (targetAvailableFrom && targetAvailableFrom > clampedStart) {
                     clampedStart = targetAvailableFrom;
                 }
@@ -95,23 +82,16 @@ export const getAvailabilityWindow = ({
                     clampedEnd = targetAvailableUntil;
                 }
 
-                // Add the window if it's valid after all adjustments
                 if (clampedStart < clampedEnd) {
-                    availableWindows.push({
-                        start: clampedStart,
-                        end: clampedEnd
-                    });
+                    availableWindows.push({ start: clampedStart, end: clampedEnd });
                 }
             }
         }
     }
 
-    // Return null if no valid availability windows were found
     if (availableWindows.length === 0) return null;
 
-    // Sort and format the availability windows before returning
     return availableWindows
-        .sort((a, b) => a.start.getTime() - b.start.getTime())
         .map(window => ({
             start: dateToTimeString(window.start),
             end: dateToTimeString(window.end)
