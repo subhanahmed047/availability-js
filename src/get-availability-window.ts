@@ -4,12 +4,21 @@ import { AvailabilityWindow, DayOverride, TimeRange, WeeklySchedule } from '../t
 import { dateToTimeString } from './utils';
 
 export interface AvailabilityParams {
-    date: Date,
-    timezone: string;
-    weeklySchedule: WeeklySchedule;
-    override?: DayOverride;
+    date: Date, // The date for which availability is being checked
+    timezone: string; // The target timezone to consider
+    weeklySchedule: WeeklySchedule; // Weekly schedule containing default availability rules
+    override?: DayOverride; // Optional override for the specific day
 }
 
+/**
+ * Calculates the availability window for a specific day based on a weekly schedule and optional overrides.
+ *
+ * @param weeklySchedule - The weekly schedule containing default rules.
+ * @param date - The date for which availability is being calculated.
+ * @param timezone - The target timezone for availability calculation.
+ * @param override - Optional override providing custom rules for the day.
+ * @returns An array of time ranges (availability windows) or null if unavailable.
+ */
 export const getAvailabilityWindow = ({
     weeklySchedule,
     date,
@@ -17,42 +26,41 @@ export const getAvailabilityWindow = ({
     override
 }: AvailabilityParams): AvailabilityWindow | null => {
 
-    // If there's an override and it marks the day as unavailable, return null
+    // If there's an override marking the day as unavailable, return null
     if (override && !override.isAvailable) {
         return null;
     }
 
     const { schedule, timezone: sourceTimezone, options } = weeklySchedule;
-    let availableFrom = null;
-    let availableUntil = null;
+    let availableFrom = null; // Optional earliest available time
+    let availableUntil = null; // Optional latest available time
+
     if (options) {
         availableFrom = options.from;
         availableUntil = options.until;
     }
 
-    // start of the day in the target timezone
+    // Calculate the start and end of the day in the target timezone
     const targetDayStart = startOfDay(date);
     const targetDayEnd = endOfDay(date);
 
-    // start of the day in the source timezone
+    // Calculate the start of the day in the source timezone
     const sourceDayStart = toZonedTime(fromZonedTime(targetDayStart, targetTimezone), sourceTimezone);
 
-    // Convert availability bounds from source to target timezone if they exist
+    // Convert availability bounds (if defined) from source to target timezone
     const targetAvailableFrom = availableFrom ?
-        toZonedTime(availableFrom, targetTimezone) : // directly convert UTC to target timezone
+        toZonedTime(availableFrom, targetTimezone) :
         null;
 
     const targetAvailableUntil = availableUntil ?
         toZonedTime(availableUntil, targetTimezone) :
         null;
 
-
     const availableWindows: { start: Date; end: Date; }[] = [];
 
-    // check for the given day and also the next day for the possible timeslots
+    // Iterate over the day and the next day to consider overlapping schedules
     for (const sourceDate of [sourceDayStart, addDays(sourceDayStart, 1)]) {
-        // check the schedule for the given day of the week
-        // If we have an override with time ranges, use those instead of the schedule
+        // Get time ranges from the override or default schedule for the day
         const timeRanges = override?.timeRanges ?? schedule.filter(s =>
             s.dayOfWeek === format(sourceDate, 'EEEE')
         );
@@ -61,24 +69,24 @@ export const getAvailabilityWindow = ({
             const [startHour, startMinute] = timeRange.start.split(':');
             const [endHour, endMinute] = timeRange.end.split(':');
 
-            // create a date object for the start and end time for each time range in the source timezone
+            // Create date objects for the start and end times in the source timezone
             const startDate = new Date(sourceDate);
             startDate.setHours(parseInt(startHour), parseInt(startMinute), 0, 0);
 
             const endDate = new Date(sourceDate);
             endDate.setHours(parseInt(endHour), parseInt(endMinute), 0, 0);
 
-            // convert the source start and end time in the target timezone
+            // Convert the source start and end times to the target timezone
             const startInTarget = toZonedTime(fromZonedTime(startDate, sourceTimezone), targetTimezone);
             const endInTarget = toZonedTime(fromZonedTime(endDate, sourceTimezone), targetTimezone);
 
-            // First check if the time range falls within the target day
+            // Check if the time range overlaps with the target day
             if (startInTarget <= targetDayEnd && endInTarget >= targetDayStart) {
-                // Initial clamping to the day boundaries
+                // Clamp the start and end times to the day boundaries
                 let clampedStart = startInTarget < targetDayStart ? targetDayStart : startInTarget;
                 let clampedEnd = endInTarget > targetDayEnd ? targetDayEnd : endInTarget;
 
-                // Then apply availability window constraints if they exist
+                // Apply optional availability constraints
                 if (targetAvailableFrom && targetAvailableFrom > clampedStart) {
                     clampedStart = targetAvailableFrom;
                 }
@@ -87,7 +95,7 @@ export const getAvailabilityWindow = ({
                     clampedEnd = targetAvailableUntil;
                 }
 
-                // Only add the window if it's valid after all clamping
+                // Add the window if it's valid after all adjustments
                 if (clampedStart < clampedEnd) {
                     availableWindows.push({
                         start: clampedStart,
@@ -98,8 +106,10 @@ export const getAvailabilityWindow = ({
         }
     }
 
+    // Return null if no valid availability windows were found
     if (availableWindows.length === 0) return null;
 
+    // Sort and format the availability windows before returning
     return availableWindows
         .sort((a, b) => a.start.getTime() - b.start.getTime())
         .map(window => ({
