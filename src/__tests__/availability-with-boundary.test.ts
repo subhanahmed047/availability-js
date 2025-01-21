@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import { parseISO } from 'date-fns';
 import { DAY_OF_WEEK, WeeklySchedule } from '../../types';
-import { getAvailability } from '../get-availability';
+import { getAvailabilityWindow } from '../get-availability-window';
 
 describe('Extended Timezone Test Cases', () => {
     describe('Indian Professional (Standard Work Hours)', () => {
@@ -28,7 +28,7 @@ describe('Extended Timezone Test Cases', () => {
              * No timezone conversion needed, times should appear exactly as defined
              */
             test('Mumbai viewer sees standard workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Kolkata"
@@ -43,7 +43,7 @@ describe('Extended Timezone Test Cases', () => {
              * Since availableFrom is after start time, it should clamp the start to 12:00
              */
             test('Mumbai viewer with availableFrom sees partial workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -63,7 +63,7 @@ describe('Extended Timezone Test Cases', () => {
              * Should clamp the end time to 15:00
              */
             test('Mumbai viewer with availableUntil sees shorter workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -82,7 +82,7 @@ describe('Extended Timezone Test Cases', () => {
              * When it's 18:00 in Mumbai, it's 20:30 in Singapore
              */
             test('Singapore viewer sees shifted workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Singapore"
@@ -98,7 +98,7 @@ describe('Extended Timezone Test Cases', () => {
              * it should clamp the start to 14:00 SGT
              */
             test('Singapore viewer with local availableFrom', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -118,7 +118,7 @@ describe('Extended Timezone Test Cases', () => {
              * Should clamp the end time to 18:00 SGT
              */
             test('Singapore viewer with local availableUntil', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -157,7 +157,7 @@ describe('Extended Timezone Test Cases', () => {
              * Both shifts should appear exactly as defined
              */
             test('São Paulo viewer sees both shifts', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/Sao_Paulo"
@@ -174,7 +174,7 @@ describe('Extended Timezone Test Cases', () => {
              * First shift should be clamped, second shift unaffected
              */
             test('São Paulo viewer with morning availableFrom', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -197,7 +197,7 @@ describe('Extended Timezone Test Cases', () => {
              * Second shift should be clamped
              */
             test('São Paulo viewer with evening availableFrom', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -218,7 +218,7 @@ describe('Extended Timezone Test Cases', () => {
              * When it's 20:00 in São Paulo, it's 17:00 in Mexico City
              */
             test('Mexico City viewer sees early morning hours', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/Mexico_City"
@@ -237,7 +237,7 @@ describe('Extended Timezone Test Cases', () => {
              * First shift should be clamped, second shift unaffected
              */
             test('Mexico City viewer with local availableFrom', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -283,7 +283,7 @@ describe('Extended Timezone Test Cases', () => {
              * Should clamp the start time to 23:30
              */
             test('Fiji viewer with late night availableFrom', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -303,7 +303,7 @@ describe('Extended Timezone Test Cases', () => {
              * Should show two segments: 22:30-22:59 and 23:00-23:59
              */
             test('Solomon Islands viewer with late night availableFrom', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -350,7 +350,7 @@ describe('Extended Timezone Test Cases', () => {
              * - Keep second shift intact
              */
             test('Paris viewer with mid-shift availableFrom', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -374,7 +374,7 @@ describe('Extended Timezone Test Cases', () => {
              * Should affect parts of two different shifts
              */
             test('Paris viewer with constraints spanning shifts', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -398,7 +398,7 @@ describe('Extended Timezone Test Cases', () => {
              * Only the parts that fall within the current day should be shown
              */
             test('Tokyo viewer sees partial schedule due to day boundary', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -440,7 +440,7 @@ describe('Extended Timezone Test Cases', () => {
              * Only the first slot should be visible as it's the only one on Monday
              */
             test('Auckland viewer sees only first slot', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -489,7 +489,7 @@ describe('Extended Timezone Test Cases', () => {
              * Each shift boundary is preserved
              */
             test('Singapore viewer sees all shifts', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Singapore"
@@ -507,7 +507,7 @@ describe('Extended Timezone Test Cases', () => {
              * Later shifts remain intact
              */
             test('Singapore viewer with mid-morning availableFrom', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -529,7 +529,7 @@ describe('Extended Timezone Test Cases', () => {
              * Earlier shifts remain intact
              */
             test('Singapore viewer with afternoon availableUntil', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -552,7 +552,7 @@ describe('Extended Timezone Test Cases', () => {
              * Middle shifts (if any) remain intact
              */
             test('Singapore viewer with mid-day constraints', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -575,7 +575,7 @@ describe('Extended Timezone Test Cases', () => {
              * Singapore is 16 hours ahead of Los Angeles
              */
             test('San Francisco viewer sees shifted schedule', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/Los_Angeles"
@@ -593,7 +593,7 @@ describe('Extended Timezone Test Cases', () => {
              * Constraints should be applied after timezone conversion
              */
             test('San Francisco viewer with local time constraints', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {

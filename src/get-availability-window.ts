@@ -1,20 +1,21 @@
 import { startOfDay, endOfDay, addDays, format } from 'date-fns';
 import { fromZonedTime, toZonedTime } from 'date-fns-tz';
-import { DayOverride, TimeRange, WeeklySchedule } from '../types';
+import { AvailabilityWindow, DayOverride, TimeRange, WeeklySchedule } from '../types';
+import { dateToTimeString } from './utils';
 
-interface AvailabilityParams {
+export interface AvailabilityParams {
     date: Date,
     timezone: string;
     weeklySchedule: WeeklySchedule;
     override?: DayOverride;
 }
 
-export const getAvailability = ({
+export const getAvailabilityWindow = ({
     weeklySchedule,
     date,
     timezone: targetTimezone,
     override
-}: AvailabilityParams): TimeRange[] | null => {
+}: AvailabilityParams): AvailabilityWindow | null => {
 
     // If there's an override and it marks the day as unavailable, return null
     if (override && !override.isAvailable) {
@@ -102,7 +103,7 @@ export const getAvailability = ({
     return availableWindows
         .sort((a, b) => a.start.getTime() - b.start.getTime())
         .map(window => ({
-            start: format(window.start, 'HH:mm'),
-            end: format(window.end, 'HH:mm')
+            start: dateToTimeString(window.start),
+            end: dateToTimeString(window.end)
         }) as TimeRange);
 };

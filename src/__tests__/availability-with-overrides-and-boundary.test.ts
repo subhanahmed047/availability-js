@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import { DAY_OF_WEEK, DayOverride, WeeklySchedule } from '../../types';
-import { getAvailability } from '../get-availability';
+import { getAvailabilityWindow } from '../get-availability-window';
 
 describe('Availability Windows with Overrides and Available Boundary', () => {
     describe('Tokyo-based Professional (Regular Office Hours) with Overrides', () => {
@@ -24,7 +24,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             };
 
             test('Tokyo viewer sees evening override hours', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo",
@@ -34,7 +34,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('Tokyo viewer with availableFrom constraint', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -49,7 +49,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('Tokyo viewer with availableUntil constraint', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -64,7 +64,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('Tokyo viewer with both availableFrom and availableUntil constraints', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -80,7 +80,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('Sydney viewer sees shifted evening override', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Australia/Sydney",
@@ -90,7 +90,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('Sydney viewer with availableFrom constraint', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -105,7 +105,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('Sydney viewer with availableUntil constraint', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -120,7 +120,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('New York viewer sees override in morning hours', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/New_York",
@@ -130,7 +130,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('New York viewer with availableFrom constraint', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -145,7 +145,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('New York viewer with availableUntil constraint', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -170,7 +170,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
                     timeRanges: null
                 };
 
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo",
@@ -189,7 +189,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
                     ]
                 };
 
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo",
@@ -211,7 +211,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
                     ]
                 };
 
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -238,7 +238,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
                     ]
                 };
 
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -267,7 +267,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             };
 
             test('Tokyo viewer sees morning shift override', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo",
@@ -277,7 +277,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('Tokyo viewer with availableFrom and availableUntil constraints', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -293,7 +293,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('New York viewer sees shifted morning override', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/New_York",
@@ -303,7 +303,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('New York viewer with availableFrom constraint', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -339,7 +339,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             };
 
             test('New York viewer sees override during normal business hours', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/New_York",
@@ -349,7 +349,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('New York viewer with availability window constraints', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -365,7 +365,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('Tokyo viewer sees parts of NY normal hours override', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo",
@@ -378,7 +378,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('Tokyo viewer with availableFrom constraint', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -396,7 +396,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('Tokyo viewer with availableUntil constraint', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {
@@ -413,7 +413,7 @@ describe('Availability Windows with Overrides and Available Boundary', () => {
             });
 
             test('Tokyo viewer with both availableFrom and availableUntil constraints', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule: {
                         ...weeklySchedule,
                         options: {

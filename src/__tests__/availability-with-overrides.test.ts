@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import { parseISO } from 'date-fns';
-import { getAvailability } from '../get-availability';
 import { DAY_OF_WEEK, DayOverride, WeeklySchedule } from '../../types';
+import { getAvailabilityWindow } from '../get-availability-window';
 
 describe('Availability Windows with Overrides', () => {
     describe('Tokyo-based Professional (Regular Office Hours) with Overrides', () => {
@@ -25,7 +25,7 @@ describe('Availability Windows with Overrides', () => {
             };
 
             test('Tokyo viewer sees evening override hours', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo",
@@ -35,7 +35,7 @@ describe('Availability Windows with Overrides', () => {
             });
 
             test('Sydney viewer sees shifted evening override', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Australia/Sydney",
@@ -45,7 +45,7 @@ describe('Availability Windows with Overrides', () => {
             });
 
             test('New York viewer sees override in morning hours', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/New_York",
@@ -65,7 +65,7 @@ describe('Availability Windows with Overrides', () => {
                     timeRanges: null
                 };
 
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo",
@@ -84,7 +84,7 @@ describe('Availability Windows with Overrides', () => {
                     ]
                 };
 
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo",
@@ -108,7 +108,7 @@ describe('Availability Windows with Overrides', () => {
             };
 
             test('Tokyo viewer sees morning shift override', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo",
@@ -118,7 +118,7 @@ describe('Availability Windows with Overrides', () => {
             });
 
             test('New York viewer sees shifted morning override', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/New_York",
@@ -149,7 +149,7 @@ describe('Availability Windows with Overrides', () => {
             };
 
             test('New York viewer sees override during normal business hours', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/New_York",
@@ -159,7 +159,7 @@ describe('Availability Windows with Overrides', () => {
             });
 
             test('Tokyo viewer sees parts of NY normal hours override', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo",

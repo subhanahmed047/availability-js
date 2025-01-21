@@ -15,6 +15,10 @@ export type TimeRange = {
     end: TimeString;
 };
 
+export interface TimeSlot extends TimeRange {
+    isAvailable: boolean;
+}
+
 export interface DailySchedule extends TimeRange {
     dayOfWeek: DAY_OF_WEEK;
 }
@@ -33,3 +37,5 @@ export interface DayOverride {
     isAvailable: boolean;
     timeRanges: TimeRange[] | null
 }
+
+export type AvailabilityWindow = TimeRange[];

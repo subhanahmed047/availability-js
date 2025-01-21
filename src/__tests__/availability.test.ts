@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import { parseISO } from 'date-fns';
 import { DAY_OF_WEEK, WeeklySchedule } from '../../types';
-import { getAvailability } from '../get-availability';
+import { getAvailabilityWindow } from '../get-availability-window';
 
 describe('Availability Windows', () => {
     describe('Tokyo-based Professional (Regular Office Hours)', () => {
@@ -18,7 +18,7 @@ describe('Availability Windows', () => {
             const date = parseISO("2024-12-08");
 
             test('Tokyo viewer sees no availability', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo"
@@ -27,7 +27,7 @@ describe('Availability Windows', () => {
             });
 
             test('Sydney viewer sees no availability', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Australia/Sydney"
@@ -36,7 +36,7 @@ describe('Availability Windows', () => {
             });
 
             test('New York viewer sees start of Tokyo Monday workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/New_York"
@@ -45,7 +45,7 @@ describe('Availability Windows', () => {
             });
 
             test('Los Angeles viewer sees start of Tokyo Monday workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/Los_Angeles"
@@ -58,7 +58,7 @@ describe('Availability Windows', () => {
             const date = parseISO("2024-12-09");
 
             test('Tokyo viewer sees full Monday workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo"
@@ -67,7 +67,7 @@ describe('Availability Windows', () => {
             });
 
             test('Sydney viewer sees shifted Monday workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Australia/Sydney"
@@ -76,7 +76,7 @@ describe('Availability Windows', () => {
             });
 
             test('New York viewer sees end of Tokyo Monday workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/New_York"
@@ -85,7 +85,7 @@ describe('Availability Windows', () => {
             });
 
             test('Los Angeles viewer sees no availability', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/Los_Angeles"
@@ -98,7 +98,7 @@ describe('Availability Windows', () => {
             const date = parseISO("2024-12-10");
 
             test('Tokyo viewer sees no availability', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo"
@@ -107,7 +107,7 @@ describe('Availability Windows', () => {
             });
 
             test('New York viewer sees start of Tokyo Wednesday workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/New_York"
@@ -131,7 +131,7 @@ describe('Availability Windows', () => {
             const date = parseISO("2024-12-09");
 
             test('Tokyo viewer sees no availability on their Monday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo"
@@ -140,7 +140,7 @@ describe('Availability Windows', () => {
             });
 
             test('New York viewer sees full Monday late shift', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/New_York"
@@ -149,7 +149,7 @@ describe('Availability Windows', () => {
             });
 
             test('Los Angeles viewer sees NY shift 3 hours earlier', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/Los_Angeles"
@@ -162,7 +162,7 @@ describe('Availability Windows', () => {
             const date = parseISO("2024-12-10");
 
             test('Tokyo viewer sees NY Tuesday late shift in early Wednesday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo"
@@ -187,7 +187,7 @@ describe('Availability Windows', () => {
             const date = parseISO("2024-12-09");
 
             test('London viewer sees both Monday shifts', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Europe/London"
@@ -199,7 +199,7 @@ describe('Availability Windows', () => {
             });
 
             test('Sydney viewer sees only Monday afternoon shift', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Australia/Sydney"
@@ -208,7 +208,7 @@ describe('Availability Windows', () => {
             });
 
             test('Dubai viewer sees both London Monday shifts adjusted', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Dubai"
@@ -236,7 +236,7 @@ describe('Availability Windows', () => {
             const date = parseISO("2024-12-09");
 
             test('Auckland viewer sees Monday late shift', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Pacific/Auckland"
@@ -245,7 +245,7 @@ describe('Availability Windows', () => {
             });
 
             test('Tokyo viewer sees both Auckland shifts', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo"
@@ -257,7 +257,7 @@ describe('Availability Windows', () => {
             });
 
             test('Los Angeles viewer sees both Auckland shifts', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/Los_Angeles"
@@ -273,7 +273,7 @@ describe('Availability Windows', () => {
             const date = parseISO("2024-12-10");
 
             test('Auckland viewer sees Tuesday early morning hours', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Pacific/Auckland"
@@ -282,7 +282,7 @@ describe('Availability Windows', () => {
             });
 
             test('Tokyo viewer sees no availability', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Tokyo"
@@ -310,7 +310,7 @@ describe('Availability Windows', () => {
              * No timezone conversion needed, times should appear exactly as defined
              */
             test('Mumbai viewer sees standard workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Kolkata"
@@ -324,7 +324,7 @@ describe('Availability Windows', () => {
              * When it's 18:00 in Mumbai, it's 20:30 in Singapore
              */
             test('Singapore viewer sees shifted workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Singapore"
@@ -338,7 +338,7 @@ describe('Availability Windows', () => {
              * When it's 18:00 in Mumbai, it's 15:30 in Moscow
              */
             test('Moscow viewer sees afternoon and evening hours', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Europe/Moscow"
@@ -363,7 +363,7 @@ describe('Availability Windows', () => {
             const date = parseISO("2024-12-09");
 
             test('São Paulo viewer sees both shifts', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/Sao_Paulo"
@@ -375,7 +375,7 @@ describe('Availability Windows', () => {
             });
 
             test('Buenos Aires viewer sees shifted hours', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/Argentina/Buenos_Aires"
@@ -387,7 +387,7 @@ describe('Availability Windows', () => {
             });
 
             test('Mexico City viewer sees early morning hours', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/Mexico_City"
@@ -414,7 +414,7 @@ describe('Availability Windows', () => {
             const date = parseISO("2024-12-09");
 
             test('Dubai viewer sees all three shifts', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Dubai"
@@ -427,7 +427,7 @@ describe('Availability Windows', () => {
             });
 
             test('Istanbul viewer sees shifted hours', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Europe/Istanbul"
@@ -440,7 +440,7 @@ describe('Availability Windows', () => {
             });
 
             test('Bangkok viewer sees late morning to night hours', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Bangkok"
@@ -468,7 +468,7 @@ describe('Availability Windows', () => {
             const date = parseISO("2024-12-09");
 
             test('Cape Town viewer sees standard workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Africa/Johannesburg"
@@ -477,7 +477,7 @@ describe('Availability Windows', () => {
             });
 
             test('Cairo viewer sees shifted workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Africa/Cairo"
@@ -486,7 +486,7 @@ describe('Availability Windows', () => {
             });
 
             test('Lagos viewer sees shifted workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Africa/Lagos"
@@ -518,7 +518,7 @@ describe('Availability Windows', () => {
              * Schedule should appear exactly as defined
              */
             test('Honolulu viewer sees early workday', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Pacific/Honolulu"
@@ -532,7 +532,7 @@ describe('Availability Windows', () => {
              * When it's 14:00 in Hawaii, it's 15:00 in Anchorage
              */
             test('Anchorage viewer sees shifted hours (1 hour ahead)', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "America/Anchorage"
@@ -547,7 +547,7 @@ describe('Availability Windows', () => {
              * Therefore, expect null as no hours fall within Monday in Seoul
              */
             test('Seoul viewer sees no hours due to day boundary', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Seoul"
@@ -583,7 +583,7 @@ describe('Availability Windows', () => {
              * Tuesday's slots fall outside our day boundary
              */
             test('Fiji viewer sees late night start', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Pacific/Fiji"
@@ -598,7 +598,7 @@ describe('Availability Windows', () => {
              * expect null as no hours fall within Monday in Samoa
              */
             test('Samoa viewer sees no hours due to date line crossing', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Pacific/Apia"
@@ -615,7 +615,7 @@ describe('Availability Windows', () => {
             * across the timezone conversion
             */
             test('Solomon Islands viewer sees late night hours (1 hour behind)', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Pacific/Guadalcanal"
@@ -642,7 +642,7 @@ describe('Availability Windows', () => {
             const date = parseISO("2024-12-09");
 
             test('Almaty viewer sees full schedule', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Almaty"
@@ -654,7 +654,7 @@ describe('Availability Windows', () => {
             });
 
             test('Karachi viewer sees shifted schedule (1 hour behind)', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Karachi"
@@ -666,7 +666,7 @@ describe('Availability Windows', () => {
             });
 
             test('Dhaka viewer sees late schedule', () => {
-                const result = getAvailability({
+                const result = getAvailabilityWindow({
                     weeklySchedule,
                     date,
                     timezone: "Asia/Dhaka"
