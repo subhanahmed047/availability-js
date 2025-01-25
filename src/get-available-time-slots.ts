@@ -1,18 +1,75 @@
 import { AvailabilityParams, getAvailabilityWindow } from './get-availability-window';
-import { TimeRange, TimeSlot } from '../types';
+import { TimeRange, TimeSlot, Booking } from '../types';
 import { dateToTimeString, timeStringToDate } from './utils';
-import { addMinutes, isBefore } from 'date-fns';
+import { addMinutes, isBefore, parseISO } from 'date-fns';
+import { fromZonedTime, toZonedTime } from 'date-fns-tz';
 
 export interface GetTimeSlotsParams extends AvailabilityParams {
-    slotDurationMinutes: number; // The duration of each time slot in minutes
+    slotDurationMinutes: number;
+    bookings?: Booking[];
 }
 
 /**
- * Checks if a given time slot falls within any of the provided availability windows.
+ * Checks if a given time slot overlaps with any bookings.
  * 
- * @param slot - The time slot to check.
- * @param availabilityWindows - An array of available time ranges.
- * @returns True if the slot is within any availability window, false otherwise.
+ * @param slot - The time slot to check in local timezone.
+ * @param date - The date for which we're checking availability.
+ * @param bookings - An array of UTC ISO string-based bookings.
+ * @param timezone - The target timezone for comparison.
+ * @returns True if the slot overlaps with any booking, false otherwise.
+ */
+const isSlotOverlappingBookings = (
+    slot: TimeRange,
+    date: Date,
+    bookings: Booking[] = [],
+    timezone: string
+): boolean => {
+    // Create full datetime by combining the date with the time slot
+    const slotStartTime = timeStringToDate(slot.start);
+    const slotEndTime = timeStringToDate(slot.end);
+
+    // Create full date-time strings in the target timezone
+    const localSlotStart = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        slotStartTime.getHours(),
+        slotStartTime.getMinutes()
+    );
+    const localSlotEnd = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        slotEndTime.getHours(),
+        slotEndTime.getMinutes()
+    );
+
+    // Convert local slot times to UTC for comparison
+    const slotStartUTC = fromZonedTime(localSlotStart, timezone);
+    const slotEndUTC = fromZonedTime(localSlotEnd, timezone);
+
+    return bookings.some(booking => {
+        const bookingStartUTC = parseISO(booking.startTime);
+        const bookingEndUTC = parseISO(booking.endTime);
+
+        // Check for any overlap between the slot and booking
+        const isOverlapping = (
+            // Slot starts during booking
+            (slotStartUTC >= bookingStartUTC && slotStartUTC < bookingEndUTC) ||
+            // Slot ends during booking
+            (slotEndUTC > bookingStartUTC && slotEndUTC <= bookingEndUTC) ||
+            // Slot contains booking
+            (slotStartUTC <= bookingStartUTC && slotEndUTC >= bookingEndUTC) ||
+            // Booking contains slot
+            (bookingStartUTC <= slotStartUTC && bookingEndUTC >= slotEndUTC)
+        );
+
+        return isOverlapping;
+    });
+};
+
+/**
+ * Checks if a given time slot falls within any of the provided availability windows.
  */
 const isSlotWithinAvailableWindows = (
     slot: TimeRange,
@@ -25,7 +82,6 @@ const isSlotWithinAvailableWindows = (
         const windowStart = timeStringToDate(window.start);
         const windowEnd = timeStringToDate(window.end);
 
-        // Check if the slot is entirely within the window
         return (
             !isBefore(slotStart, windowStart) &&
             !isBefore(windowEnd, slotEnd)
@@ -35,19 +91,15 @@ const isSlotWithinAvailableWindows = (
 
 /**
  * Generates available time slots based on the provided availability parameters.
- * 
- * @param params - Parameters including availability, slot duration, and other options.
- * @returns An array of time slots with their availability status, or null if no availability windows are provided.
  */
 export const getAvailableTimeslots = (params: GetTimeSlotsParams): TimeSlot[] | null => {
+    const { bookings = [], timezone, date } = params;
     const availabilityWindows = getAvailabilityWindow(params);
 
-    // If there are no availability windows, return null
     if (!availabilityWindows) {
         return null;
     }
 
-    // Precompute and sort availability windows for efficient access
     const parsedWindows = availabilityWindows
         .map(w => ({
             start: timeStringToDate(w.start),
@@ -55,36 +107,43 @@ export const getAvailableTimeslots = (params: GetTimeSlotsParams): TimeSlot[] | 
         }))
         .sort((a, b) => a.start.getTime() - b.start.getTime());
 
-    const earliestStart = parsedWindows[0].start; // The earliest available start time
-    const latestEnd = parsedWindows[parsedWindows.length - 1].end; // The latest available end time
+    const earliestStart = parsedWindows[0].start;
+    const latestEnd = parsedWindows[parsedWindows.length - 1].end;
 
-    const slots: TimeSlot[] = []; // Array to store generated time slots
+    const slots: TimeSlot[] = [];
     let currentTime = earliestStart;
 
-    // Generate slots within the available time range
     while (currentTime < latestEnd) {
-        const slotEnd = addMinutes(currentTime, params.slotDurationMinutes); // Calculate the end time of the slot
+        const slotEnd = addMinutes(currentTime, params.slotDurationMinutes);
+        const adjustedSlotEnd = slotEnd > latestEnd ? latestEnd : slotEnd;
 
         const timeSlot: TimeSlot = {
             start: dateToTimeString(currentTime),
-            end: dateToTimeString(slotEnd > latestEnd ? latestEnd : slotEnd), // Clamp the slot end time to latestEnd if necessary
-            isAvailable: false // Default availability is false
+            end: dateToTimeString(adjustedSlotEnd),
+            isAvailable: false
         };
 
-        // Check if the current time slot falls within any availability window
+        // First check if the slot is within availability windows
         timeSlot.isAvailable = isSlotWithinAvailableWindows(
             { start: timeSlot.start, end: timeSlot.end },
             availabilityWindows
         );
 
-        slots.push(timeSlot); // Add the generated time slot to the list
+        // If the slot is available, check if it's not booked
+        if (timeSlot.isAvailable) {
+            timeSlot.isAvailable = !isSlotOverlappingBookings(
+                { start: timeSlot.start, end: timeSlot.end },
+                date,
+                bookings,
+                timezone
+            );
+        }
 
-        // Break if the slot end time reaches or exceeds the latest available end time
+        slots.push(timeSlot);
+
         if (slotEnd >= latestEnd) break;
-
-        currentTime = addMinutes(currentTime, params.slotDurationMinutes); // Move to the next slot
+        currentTime = addMinutes(currentTime, params.slotDurationMinutes);
     }
 
-    return slots; // Return the list of generated time slots
+    return slots;
 };
-``

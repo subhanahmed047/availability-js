@@ -39,3 +39,8 @@ export interface DayOverride {
 }
 
 export type AvailabilityWindow = TimeRange[];
+
+export interface Booking {
+    startTime: string; // UTC ISO string (e.g., "2024-01-25T14:30:00Z")
+    endTime: string;   // UTC ISO string (e.g., "2024-01-25T15:30:00Z")
+}

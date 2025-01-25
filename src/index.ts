@@ -1,7 +1,5 @@
-import { parseISO } from "date-fns";
-import { DAY_OF_WEEK, DayOverride, WeeklySchedule } from "../types";
+import { DAY_OF_WEEK, DayOverride, TimeRange, WeeklySchedule } from "../types";
 import { getAvailableTimeslots } from "./get-available-time-slots";
-import { getAvailabilityWindow } from "./get-availability-window";
 
 const weeklySchedule: WeeklySchedule = {
     schedule: [
@@ -20,18 +18,13 @@ const normalHoursOverride: DayOverride = {
     ]
 };
 
-const window = getAvailabilityWindow({
-    weeklySchedule: {
-        ...weeklySchedule,
-        options: {
-            from: new Date("2024-12-09T02:00:00+09:00")
-        }
-    },
-    date,
-    timezone: "Asia/Tokyo",
-    override: normalHoursOverride,
-});
+// Adding some example bookings
+const bookings: TimeRange[] = [
+    { start: "02:00", end: "03:00" },  // Early morning booking
+    { start: "23:00", end: "23:59" }   // Late night booking
+];
 
+// Now get the time slots with bookings
 const slots = getAvailableTimeslots({
     weeklySchedule: {
         ...weeklySchedule,
@@ -42,8 +35,8 @@ const slots = getAvailableTimeslots({
     date,
     timezone: "Asia/Tokyo",
     override: normalHoursOverride,
-    slotDurationMinutes: 20
+    slotDurationMinutes: 20,
+    bookings  // Adding the bookings parameter
 });
 
-
-console.log({ window, slots });
+console.log({ slots });
