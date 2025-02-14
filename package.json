@@ -1,5 +1,5 @@
 {
-  "name": "availability-js",
+  "name": "@vocall/availability",
   "version": "1.0.0",
   "description": "A package for managing user availability across multiple time zones efficiently.",
   "author": "Subhan Ahmed",
