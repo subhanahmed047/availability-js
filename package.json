@@ -1,9 +1,9 @@
 {
-  "name": "availability",
+  "name": "@vocall/availability",
   "version": "1.0.0",
   "description": "A package for managing user availability across multiple time zones efficiently.",
   "author": "Subhan Ahmed",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "private": true,
   "files": [
     "dist",
@@ -34,5 +34,16 @@
   "dependencies": {
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/subhanahmed047/availability.git"
+  },
+  "keywords": [
+    "availability"
+  ],
+  "bugs": {
+    "url": "https://github.com/subhanahmed047/availability/issues"
+  },
+  "homepage": "https://github.com/subhanahmed047/availability#readme"
 }
