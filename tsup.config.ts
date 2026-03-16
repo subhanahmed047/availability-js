@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
-    entry: ["src", "!src/__tests__/**", "!src/**/*.test.*"], // ignore the __tests__
+    entry: ["src/index.ts"],
     target: 'es2020',
     format: ['cjs', 'esm'],
     splitting: false,

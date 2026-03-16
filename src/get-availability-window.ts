@@ -1,6 +1,6 @@
 import { startOfDay, endOfDay, addDays, format } from 'date-fns';
 import { fromZonedTime, toZonedTime } from 'date-fns-tz';
-import { AvailabilityWindow, DayOverride, TimeRange, WeeklySchedule } from '../types';
+import { AvailabilityWindow, DayOverride, TimeRange, WeeklySchedule } from './types';
 import { dateToTimeString } from './utils';
 
 export interface AvailabilityParams {

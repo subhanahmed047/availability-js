@@ -1,5 +1,5 @@
 import { parse } from "date-fns";
-import { TimeString } from "../../types";
+import { TimeString } from "../types";
 
 export const timeStringToDate = (timeString: TimeString): Date => {
     // Create a date object for today with the given time

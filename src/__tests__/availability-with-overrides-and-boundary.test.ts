@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { DAY_OF_WEEK, DayOverride, WeeklySchedule } from '../../types';
+import { DAY_OF_WEEK, DayOverride, WeeklySchedule } from '../types';
 import { getAvailabilityWindow } from '../get-availability-window';
 
 describe('Availability Windows with Overrides and Available Boundary', () => {

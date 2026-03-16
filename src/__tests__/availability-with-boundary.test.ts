@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import { parseISO } from 'date-fns';
-import { DAY_OF_WEEK, WeeklySchedule } from '../../types';
+import { DAY_OF_WEEK, WeeklySchedule } from '../types';
 import { getAvailabilityWindow } from '../get-availability-window';
 
 describe('Extended Timezone Test Cases', () => {

@@ -1,10 +1,9 @@
 {
-  "name": "@vocall/availability",
+  "name": "availability-js",
   "version": "1.0.0",
-  "description": "A package for managing user availability across multiple time zones efficiently.",
+  "description": "Client-side calendar availability with weekly schedules, date overrides, and bookings — small, timezone-aware.",
   "author": "Subhan Ahmed",
-  "license": "UNLICENSED",
-  "private": true,
+  "license": "MIT",
   "files": [
     "dist",
     "package.json"
@@ -40,7 +39,13 @@
     "url": "git+https://github.com/subhanahmed047/availability.git"
   },
   "keywords": [
-    "availability"
+    "availability",
+    "calendar",
+    "scheduling",
+    "time-slots",
+    "timezone",
+    "bookings",
+    "overrides"
   ],
   "bugs": {
     "url": "https://github.com/subhanahmed047/availability/issues"

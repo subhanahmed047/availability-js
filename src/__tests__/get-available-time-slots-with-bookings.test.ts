@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { DAY_OF_WEEK, Booking, TimeSlot, WeeklySchedule } from '../../types';
+import { DAY_OF_WEEK, Booking, TimeSlot, WeeklySchedule } from '../types';
 import { getAvailableTimeslots } from '../get-available-time-slots';
 import { parseISO } from 'date-fns';
 
