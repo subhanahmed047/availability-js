@@ -1,7 +1,7 @@
-import { startOfDay, endOfDay, addDays, format } from 'date-fns';
-import { fromZonedTime, toZonedTime } from 'date-fns-tz';
 import { AvailabilityWindow, DayOverride, TimeRange, WeeklySchedule } from './types';
 import { dateToTimeString } from './utils';
+import { startOfDay, endOfDay, addDays, fromZonedTime, toZonedTime } from './utils/date-helpers';
+import { getWeekdayName } from './utils/get-weekday-name';
 
 export interface AvailabilityParams {
     date: Date, // The date for which availability is being checked
@@ -55,7 +55,7 @@ export const getAvailabilityWindow = ({
 
     const sourceDates = [sourceDayStart, addDays(sourceDayStart, 1)]; // Overnight support
     for (const sourceDate of sourceDates) {
-        const timeRanges = override?.timeRanges ?? dayScheduleMap[format(sourceDate, 'EEEE')];
+        const timeRanges = override?.timeRanges ?? dayScheduleMap[getWeekdayName(sourceDate)];
 
         for (const timeRange of timeRanges ?? []) {
             const [startHour, startMinute] = timeRange.start.split(':');

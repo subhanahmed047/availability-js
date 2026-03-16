@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import { DAY_OF_WEEK, DayOverride, WeeklySchedule } from '../types';
 import { getAvailableTimeslots } from '../get-available-time-slots';
-import { parseISO } from 'date-fns';
+import { parseISO } from '../utils/date-helpers';
 
 describe('getAvailableTimeslots', () => {
     describe('Tokyo-based Professional with Regular Hours', () => {

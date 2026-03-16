@@ -8,6 +8,7 @@
     "dist",
     "package.json"
   ],
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -32,10 +33,7 @@
     "docs": "cd docs && npm run dev",
     "docs:build": "cd docs && npm run build"
   },
-  "dependencies": {
-    "date-fns": "^4.1.0",
-    "date-fns-tz": "^3.2.0"
-  },
+  "dependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/subhanahmed047/availability.git"

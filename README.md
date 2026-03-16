@@ -1,6 +1,6 @@
 # availability-js
 
-Client-side calendar availability with **weekly schedule**, **date overrides**, and **bookings** — small, timezone-aware. No server required for computing available slots.
+A tiny, dependency-free availability engine for JavaScript and TypeScript — compute weekly schedules, date overrides, and bookings in any timezone, in both Node.js and the browser.
 
 [![npm version](https://img.shields.io/npm/v/availability-js.svg)](https://www.npmjs.com/package/availability-js)
 
@@ -129,9 +129,14 @@ You can pass the same `override` as in `getAvailabilityWindow` to apply date ove
 - You ask for availability in a **viewer timezone** (`timezone` in params). Slots and windows are returned in that viewer timezone (e.g. `"09:00"`, `"17:00"`).
 - Bookings are in **UTC** (`startTime` / `endTime` as ISO strings). Overlaps are computed correctly across timezones.
 
-## Peer / dependencies
+## Size & dependencies
 
-Uses `date-fns` and `date-fns-tz` for timezone and date handling. They are declared as dependencies so they are installed with the package.
+- **Zero runtime dependencies** — everything is implemented with small, well-tested helpers.
+- **Bundle footprint** (built output, uncompressed):
+  - ~**84 KB** ESM (`dist/index.mjs`)
+  - ~**84 KB** CJS (`dist/index.js`)
+
+With minification and compression in your app’s bundler, the effective payload will be much smaller, and tree-shaking is enabled via `"sideEffects": false` in `package.json`.
 
 ## Docs
 

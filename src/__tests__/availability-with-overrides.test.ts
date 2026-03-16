@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'vitest';
-import { parseISO } from 'date-fns';
+import { parseISO } from '../utils/date-helpers';
 import { DAY_OF_WEEK, DayOverride, WeeklySchedule } from '../types';
 import { getAvailabilityWindow } from '../get-availability-window';
 

@@ -1,8 +1,7 @@
 import { AvailabilityParams, getAvailabilityWindow } from './get-availability-window';
 import { TimeRange, TimeSlot, Booking } from './types';
 import { dateToTimeString, timeStringToDate } from './utils';
-import { addMinutes, isBefore, parseISO } from 'date-fns';
-import { fromZonedTime, toZonedTime } from 'date-fns-tz';
+import { addMinutes, isBefore, parseISO, fromZonedTime, toZonedTime } from './utils/date-helpers';
 
 export interface GetTimeSlotsParams extends AvailabilityParams {
     slotDurationMinutes: number;
