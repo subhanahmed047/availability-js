@@ -1,6 +1,6 @@
 {
   "name": "availability-js",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Client-side calendar availability with weekly schedules, date overrides, and bookings — small, timezone-aware.",
   "author": "Subhan Ahmed",
   "license": "MIT",
