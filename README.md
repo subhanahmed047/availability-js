@@ -2,6 +2,11 @@
 
 Client-side calendar availability with **weekly schedule**, **date overrides**, and **bookings** — small, timezone-aware. No server required for computing available slots.
 
+[![npm version](https://img.shields.io/npm/v/availability-js.svg)](https://www.npmjs.com/package/availability-js)
+
+- **Docs**: [`https://availability-js.vercel.app/docs`](https://availability-js.vercel.app/docs)
+- **npm**: [`https://www.npmjs.com/package/availability-js`](https://www.npmjs.com/package/availability-js)
+
 ## Install
 
 ```bash

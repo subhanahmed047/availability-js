@@ -14,6 +14,12 @@ export default function HomePage() {
         >
           Documentation
         </Link>
+        <Link
+          href="https://www.npmjs.com/package/availability-js"
+          className="px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 font-medium hover:bg-zinc-50 dark:hover:bg-zinc-900"
+        >
+          View on npm
+        </Link>
       </div>
     </div>
   );
