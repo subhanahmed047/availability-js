@@ -1,0 +1,76 @@
+---
+title: Bookings
+description: Exclude existing bookings from available slots.
+---
+
+# Bookings
+
+Bookings represent events that are already scheduled. When computing available slots, any slot that overlaps a booking is marked `isAvailable: false`.
+
+## Format
+
+Bookings use UTC ISO 8601 strings:
+
+```ts
+import { type Booking } from 'availability-js';
+
+const booking: Booking = {
+  startTime: '2024-12-09T10:00:00Z',
+  endTime: '2024-12-09T11:00:00Z',
+};
+```
+
+- **`startTime`** — Start of the event in UTC (ISO string).
+- **`endTime`** — End of the event in UTC (ISO string).
+
+## Usage
+
+Pass a `bookings` array to `getAvailableTimeslots`:
+
+```ts
+import {
+  getAvailableTimeslots,
+  DAY_OF_WEEK,
+  type WeeklySchedule,
+  type Booking,
+} from 'availability-js';
+
+const weeklySchedule: WeeklySchedule = {
+  schedule: [
+    { dayOfWeek: DAY_OF_WEEK.Monday, start: '10:00', end: '18:00' },
+  ],
+  timezone: 'Asia/Kolkata',
+};
+
+const bookings: Booking[] = [
+  {
+    startTime: '2024-12-09T07:30:00Z', // 13:00 IST
+    endTime: '2024-12-09T08:30:00Z',   // 14:00 IST
+  },
+];
+
+const slots = getAvailableTimeslots({
+  weeklySchedule,
+  date: new Date('2024-12-09'),
+  timezone: 'Europe/London',
+  slotDurationMinutes: 30,
+  bookings,
+});
+
+// Slots overlapping the booking are marked unavailable.
+// Example (partial):
+// [
+//   { start: '10:00', end: '10:30', isAvailable: true },
+//   { start: '10:30', end: '11:00', isAvailable: true },
+//   { start: '11:00', end: '11:30', isAvailable: true },
+//   { start: '11:30', end: '12:00', isAvailable: true },
+//   { start: '12:00', end: '12:30', isAvailable: true },
+//   { start: '12:30', end: '13:00', isAvailable: true },
+//   { start: '13:00', end: '13:30', isAvailable: false }, // booked
+//   { start: '13:30', end: '14:00', isAvailable: false }, // booked
+//   { start: '14:00', end: '14:30', isAvailable: true },
+//   ...
+// ]
+```
+
+Slots that overlap any booking will have `isAvailable: false`. The library handles timezone conversion internally, so you can define the schedule in one timezone and pass bookings in UTC.

@@ -1,0 +1,84 @@
+---
+title: Getting Started
+description: Learn the core concepts and build your first availability flow.
+---
+
+# Getting Started
+
+## Core concepts
+
+1. **Weekly schedule** — Your default availability (e.g. Mon–Fri 9–5 in `Europe/London`).
+2. **Date override** — Optional custom availability for a specific date (split shift, day off, etc.).
+3. **Bookings** — Existing events in UTC; slots overlapping them are marked unavailable.
+4. **Viewer timezone** — The timezone in which you want slots returned (e.g. the user's local timezone).
+
+## Availability windows vs. time slots
+
+- **`getAvailabilityWindow`** — Returns raw time ranges for a day (e.g. `[{ start: '09:00', end: '17:00' }]`). Use when you need the overall availability shape.
+- **`getAvailableTimeslots`** — Returns discrete slots (e.g. 30-minute blocks) with `isAvailable` flags. Use for a booking UI where users pick a slot.
+
+## Basic flow
+
+### 1. Define your weekly schedule
+
+```ts
+import { DAY_OF_WEEK, type WeeklySchedule } from 'availability-js';
+
+const weeklySchedule: WeeklySchedule = {
+  schedule: [
+    { dayOfWeek: DAY_OF_WEEK.Monday, start: '09:00', end: '17:00' },
+    { dayOfWeek: DAY_OF_WEEK.Wednesday, start: '09:00', end: '17:00' },
+  ],
+  timezone: 'Europe/London',
+};
+```
+
+### 2. Get availability for a date
+
+```ts
+import { getAvailabilityWindow } from 'availability-js';
+
+const windows = getAvailabilityWindow({
+  weeklySchedule,
+  date: new Date('2024-12-09'),
+  timezone: 'Europe/London',
+});
+// → [{ start: '09:00', end: '17:00' }]
+```
+
+### 3. Get bookable time slots (with optional bookings)
+
+```ts
+import { getAvailableTimeslots } from 'availability-js';
+
+const slots = getAvailableTimeslots({
+  weeklySchedule,
+  date: new Date('2024-12-09'),
+  timezone: 'Europe/London',
+  slotDurationMinutes: 30,
+  bookings: [
+    { startTime: '2024-12-09T10:00:00Z', endTime: '2024-12-09T11:00:00Z' },
+  ],
+});
+// → Example (partial):
+// [
+//   { start: '09:00', end: '09:30', isAvailable: true },
+//   { start: '09:30', end: '10:00', isAvailable: true },
+//   { start: '10:00', end: '10:30', isAvailable: false }, // overlaps booking
+//   { start: '10:30', end: '11:00', isAvailable: false }, // overlaps booking
+//   { start: '11:00', end: '11:30', isAvailable: true },
+//   ...
+// ]
+```
+
+## Next steps
+
+- [Working hours & overrides](/docs/guides/working-hours) — Configure schedules and date exceptions
+- [Bookings](/docs/guides/bookings) — Exclude existing events from availability
+- [API Reference](/docs/api/get-availability-window) — Full API details
+
+## Interactive playground
+
+Adjust schedules, dates, viewer timezones, and bookings to see live results from `getAvailabilityWindow` and `getAvailableTimeslots`.
+
+<AvailabilityPlayground />

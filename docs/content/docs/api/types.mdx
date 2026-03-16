@@ -1,0 +1,88 @@
+---
+title: Types
+description: TypeScript types and enums exported by availability-js.
+---
+
+# Types
+
+## DAY_OF_WEEK
+
+```ts
+enum DAY_OF_WEEK {
+  Sunday = "Sunday",
+  Monday = "Monday",
+  Tuesday = "Tuesday",
+  Wednesday = "Wednesday",
+  Thursday = "Thursday",
+  Friday = "Friday",
+  Saturday = "Saturday"
+}
+```
+
+## TimeString
+
+```ts
+type TimeString = `${number}${number}:${number}${number}`;
+```
+
+24-hour format, e.g. `"09:00"`, `"17:30"`.
+
+## TimeRange
+
+```ts
+type TimeRange = {
+  start: TimeString;
+  end: TimeString;
+};
+```
+
+## TimeSlot
+
+```ts
+interface TimeSlot extends TimeRange {
+  isAvailable: boolean;
+}
+```
+
+## WeeklySchedule
+
+```ts
+type WeeklySchedule = {
+  schedule: DailySchedule[];
+  timezone: string;
+  options?: {
+    from?: Date;
+    until?: Date;
+  };
+};
+```
+
+## DailySchedule
+
+```ts
+interface DailySchedule extends TimeRange {
+  dayOfWeek: DAY_OF_WEEK;
+}
+```
+
+## DayOverride
+
+```ts
+interface DayOverride {
+  date: Date;
+  isAvailable: boolean;
+  timeRanges: TimeRange[] | null;
+}
+```
+
+- `isAvailable: false` and `timeRanges: null` = full day unavailable
+- `isAvailable: true` and `timeRanges: [...]` = custom hours for that date
+
+## Booking
+
+```ts
+interface Booking {
+  startTime: string; // UTC ISO string
+  endTime: string;   // UTC ISO string
+}
+```

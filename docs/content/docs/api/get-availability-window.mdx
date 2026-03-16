@@ -1,0 +1,73 @@
+---
+title: getAvailabilityWindow
+description: Get availability time ranges for a specific date.
+---
+
+# getAvailabilityWindow
+
+Returns the available time ranges for a given date, based on the weekly schedule and optional date override.
+
+## Signature
+
+```ts
+function getAvailabilityWindow(params: AvailabilityParams): AvailabilityWindow | null
+```
+
+## Parameters
+
+| Param | Type | Description |
+|-------|------|--------------|
+| `weeklySchedule` | `WeeklySchedule` | Default weekly availability |
+| `date` | `Date` | The date to check |
+| `timezone` | `string` | IANA timezone for the returned ranges |
+| `override` | `DayOverride` (optional) | Override for this specific date |
+
+## Returns
+
+`TimeRange[] | null` — Array of `{ start, end }` in `HH:mm` format, or `null` if the day is unavailable.
+
+## Example
+
+```ts
+import { getAvailabilityWindow, DAY_OF_WEEK, type WeeklySchedule } from 'availability-js';
+
+const weeklySchedule: WeeklySchedule = {
+  schedule: [
+    { dayOfWeek: DAY_OF_WEEK.Monday, start: '09:00', end: '17:00' },
+  ],
+  timezone: 'Europe/London',
+};
+
+const windows = getAvailabilityWindow({
+  weeklySchedule,
+  date: new Date('2024-12-09'),
+  timezone: 'Europe/London',
+});
+// → [{ start: '09:00', end: '17:00' }]
+```
+
+### Cross-timezone example
+
+Schedule defined in Tokyo, viewed from New York:
+
+```ts
+import { getAvailabilityWindow, DAY_OF_WEEK, type WeeklySchedule } from 'availability-js';
+
+const weeklySchedule: WeeklySchedule = {
+  schedule: [
+    { dayOfWeek: DAY_OF_WEEK.Monday, start: '09:00', end: '17:00' },
+  ],
+  timezone: 'Asia/Tokyo',
+};
+
+const windows = getAvailabilityWindow({
+  weeklySchedule,
+  date: new Date('2024-12-09'),
+  timezone: 'America/New_York',
+});
+
+// On this date:
+// - 09:00–17:00 in Tokyo maps partly into New York's previous day.
+// - On New York's Monday, the viewer only sees the end of Tokyo's Monday:
+// windows === [{ start: '00:00', end: '03:00' }]
+```

@@ -28,7 +28,9 @@
     "build": "tsup",
     "test": "vitest",
     "test:watch": "vitest --watch",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "docs": "cd docs && npm run dev",
+    "docs:build": "cd docs && npm run build"
   },
   "dependencies": {
     "date-fns": "^4.1.0",

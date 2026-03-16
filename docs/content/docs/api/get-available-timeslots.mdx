@@ -1,0 +1,84 @@
+---
+title: getAvailableTimeslots
+description: Get discrete time slots for a date, with booking exclusion.
+---
+
+# getAvailableTimeslots
+
+Returns discrete time slots for a given date. Each slot has `start`, `end`, and `isAvailable`. Slots overlapping existing bookings are marked `isAvailable: false`.
+
+## Signature
+
+```ts
+function getAvailableTimeslots(params: GetTimeSlotsParams): TimeSlot[] | null
+```
+
+## Parameters
+
+Extends `AvailabilityParams` with:
+
+| Param | Type | Description |
+|-------|------|--------------|
+| `slotDurationMinutes` | `number` | Duration of each slot (e.g. 15, 30, 60) |
+| `bookings` | `Booking[]` (optional) | Existing bookings in UTC to exclude |
+
+## Returns
+
+`TimeSlot[] | null` — Array of `{ start, end, isAvailable }`, or `null` if the day is unavailable.
+
+## Example
+
+```ts
+import {
+  getAvailableTimeslots,
+  DAY_OF_WEEK,
+  type WeeklySchedule,
+  type Booking,
+  type TimeSlot,
+} from 'availability-js';
+
+const weeklySchedule: WeeklySchedule = {
+  schedule: [
+    { dayOfWeek: DAY_OF_WEEK.Monday, start: '10:00', end: '18:00' },
+  ],
+  timezone: 'Asia/Kolkata',
+};
+
+const bookings: Booking[] = [
+  {
+    startTime: '2024-12-09T07:30:00Z', // 13:00 IST
+    endTime: '2024-12-09T08:30:00Z',   // 14:00 IST
+  },
+];
+
+const slots: TimeSlot[] | null = getAvailableTimeslots({
+  weeklySchedule,
+  date: new Date('2024-12-09'),
+  timezone: 'Asia/Kolkata',
+  slotDurationMinutes: 30,
+  bookings,
+}) ?? null;
+
+// Result (example):
+// [
+//   // Morning (available)
+//   { start: '10:00', end: '10:30', isAvailable: true },
+//   { start: '10:30', end: '11:00', isAvailable: true },
+//   { start: '11:00', end: '11:30', isAvailable: true },
+//   { start: '11:30', end: '12:00', isAvailable: true },
+//   { start: '12:00', end: '12:30', isAvailable: true },
+//   { start: '12:30', end: '13:00', isAvailable: true },
+//   // Lunch hour booking (unavailable)
+//   { start: '13:00', end: '13:30', isAvailable: false },
+//   { start: '13:30', end: '14:00', isAvailable: false },
+//   // Afternoon (available)
+//   { start: '14:00', end: '14:30', isAvailable: true },
+//   { start: '14:30', end: '15:00', isAvailable: true },
+//   { start: '15:00', end: '15:30', isAvailable: true },
+//   { start: '15:30', end: '16:00', isAvailable: true },
+//   { start: '16:00', end: '16:30', isAvailable: true },
+//   { start: '16:30', end: '17:00', isAvailable: true },
+//   { start: '17:00', end: '17:30', isAvailable: true },
+//   { start: '17:30', end: '18:00', isAvailable: true },
+// ]
+```

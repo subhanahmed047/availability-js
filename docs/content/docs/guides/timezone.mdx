@@ -1,0 +1,54 @@
+---
+title: Timezone Behaviour
+description: How timezones work in availability-js.
+---
+
+# Timezone Behaviour
+
+## Schedule timezone vs. viewer timezone
+
+- **Schedule timezone** (`weeklySchedule.timezone`) — The timezone in which your working hours are defined. For example, if you work 9–5 in London, use `Europe/London`.
+- **Viewer timezone** (`timezone` in params) — The timezone in which you want results. Typically the end user's timezone. Slots and windows are returned in this timezone (e.g. `"09:00"`, `"17:00"`).
+
+## Example
+
+Schedule: Mon–Fri 9–5 in `Europe/London`.  
+Viewer: `America/New_York`.
+
+For Monday Dec 9, 2024:
+- In London: 9–5 local.
+- In New York: 4am–12pm EST (winter). The library returns slots in New York time so the viewer sees `04:00`–`12:00`.
+
+```ts
+import {
+  getAvailableTimeslots,
+  DAY_OF_WEEK,
+  type WeeklySchedule,
+} from 'availability-js';
+
+const weeklySchedule: WeeklySchedule = {
+  schedule: [
+    { dayOfWeek: DAY_OF_WEEK.Monday, start: '09:00', end: '17:00' },
+  ],
+  timezone: 'Europe/London',
+};
+
+const slots = getAvailableTimeslots({
+  weeklySchedule,
+  date: new Date('2024-12-09'),
+  timezone: 'America/New_York',
+  slotDurationMinutes: 60,
+});
+
+// Result (example):
+// [
+//   { start: '04:00', end: '05:00', isAvailable: true },
+//   { start: '05:00', end: '06:00', isAvailable: true },
+//   ...
+//   { start: '11:00', end: '12:00', isAvailable: true },
+// ]
+```
+
+## Bookings in UTC
+
+Bookings are always in UTC. The library converts between UTC and the viewer timezone when checking overlaps, so you don't need to convert manually.

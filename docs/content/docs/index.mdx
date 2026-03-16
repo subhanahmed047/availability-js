@@ -1,0 +1,51 @@
+---
+title: Introduction
+description: Client-side calendar availability with weekly schedules, date overrides, and bookings.
+---
+
+# availability-js
+
+A small, client-side library for computing calendar availability. Define weekly working hours, add date-specific overrides, and exclude existing bookings — all with full timezone support. No server required.
+
+## Features
+
+- **Weekly schedule** — Define availability per day of week (e.g. Mon 9–5, Wed 9–5)
+- **Date overrides** — Override specific dates with custom hours or mark days unavailable
+- **Bookings** — Exclude existing bookings when computing available slots
+- **Timezone-aware** — Schedules in one timezone, query in another; bookings in UTC
+- **Lightweight** — Uses `date-fns` and `date-fns-tz`; tree-shakeable
+
+## Quick example
+
+```ts
+import {
+  getAvailableTimeslots,
+  DAY_OF_WEEK,
+  type WeeklySchedule,
+} from 'availability-js';
+
+const schedule: WeeklySchedule = {
+  schedule: [
+    { dayOfWeek: DAY_OF_WEEK.Monday, start: '09:00', end: '17:00' },
+    { dayOfWeek: DAY_OF_WEEK.Wednesday, start: '09:00', end: '17:00' },
+  ],
+  timezone: 'Europe/London',
+};
+
+const slots = getAvailableTimeslots({
+  weeklySchedule: schedule,
+  date: new Date('2024-12-09'),
+  timezone: 'Europe/London',
+  slotDurationMinutes: 30,
+});
+
+// → Array of { start, end, isAvailable } slots
+```
+
+## Next steps
+
+<Cards>
+  <Card title="Installation" href="/docs/installation" />
+  <Card title="Getting Started" href="/docs/getting-started" />
+  <Card title="API Reference" href="/docs/api/get-availability-window" />
+</Cards>

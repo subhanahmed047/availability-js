@@ -1,0 +1,59 @@
+---
+title: Working Hours & Overrides
+description: Configure weekly schedules and date-specific overrides.
+---
+
+# Working Hours & Overrides
+
+## Weekly schedule
+
+Define your default availability with a `WeeklySchedule`:
+
+```ts
+import { DAY_OF_WEEK, type WeeklySchedule } from 'availability-js';
+
+const weeklySchedule: WeeklySchedule = {
+  schedule: [
+    { dayOfWeek: DAY_OF_WEEK.Monday, start: '09:00', end: '17:00' },
+    { dayOfWeek: DAY_OF_WEEK.Tuesday, start: '09:00', end: '17:00' },
+    { dayOfWeek: DAY_OF_WEEK.Wednesday, start: '09:00', end: '12:00' },
+    { dayOfWeek: DAY_OF_WEEK.Wednesday, start: '14:00', end: '17:00' },
+  ],
+  timezone: 'Europe/London',
+};
+```
+
+- **`schedule`** — Array of `{ dayOfWeek, start, end }`. You can have multiple ranges per day (e.g. split shifts).
+- **`timezone`** — Timezone in which the schedule is defined (IANA, e.g. `Europe/London`).
+- **`options.from` / `options.until`** — Optional global bounds (e.g. availability only from Jan 1 to Dec 31).
+
+### Time format
+
+Times use `HH:mm` in 24-hour format (e.g. `09:00`, `17:30`).
+
+## Date overrides
+
+Override availability for specific dates:
+
+```ts
+import { type DayOverride } from 'availability-js';
+
+// Custom hours for a specific day
+const override: DayOverride = {
+  date: new Date('2024-12-09'),
+  isAvailable: true,
+  timeRanges: [
+    { start: '09:00', end: '12:00' },
+    { start: '14:00', end: '17:00' },
+  ],
+};
+
+// Full day unavailable
+const dayOff: DayOverride = {
+  date: new Date('2024-12-25'),
+  isAvailable: false,
+  timeRanges: null,
+};
+```
+
+When you pass an override to `getAvailabilityWindow` or `getAvailableTimeslots`, it replaces the weekly schedule for that date. The caller is responsible for resolving which override (if any) applies to the requested date.
