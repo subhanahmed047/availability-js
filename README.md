@@ -3,6 +3,7 @@
 A tiny, dependency-free availability engine for JavaScript and TypeScript — compute weekly schedules, date overrides, and bookings in any timezone, in both Node.js and the browser.
 
 [![npm version](https://img.shields.io/npm/v/availability-js.svg)](https://www.npmjs.com/package/availability-js)
+[![CI](https://github.com/subhanahmed047/availability/actions/workflows/test.yml/badge.svg)](https://github.com/subhanahmed047/availability/actions/workflows/test.yml)
 
 - **Docs**: [`https://availability-js.vercel.app/docs`](https://availability-js.vercel.app/docs)
 - **npm**: [`https://www.npmjs.com/package/availability-js`](https://www.npmjs.com/package/availability-js)
@@ -132,11 +133,11 @@ You can pass the same `override` as in `getAvailabilityWindow` to apply date ove
 ## Size & dependencies
 
 - **Zero runtime dependencies** — everything is implemented with small, well-tested helpers.
-- **Bundle footprint** (built output, uncompressed):
-  - ~**84 KB** ESM (`dist/index.mjs`)
-  - ~**84 KB** CJS (`dist/index.js`)
+- **Bundle footprint** (Bundlephobia, v1.1.0):
+  - ~**33 kB** minified
+  - ~**8.2 kB** minified + gzipped
 
-With minification and compression in your app’s bundler, the effective payload will be much smaller, and tree-shaking is enabled via `"sideEffects": false` in `package.json`.
+With minification and compression in your app’s bundler, the effective payload will be even smaller, and tree-shaking is enabled via `"sideEffects": false` in `package.json`.
 
 ## Docs
 
