@@ -10,7 +10,7 @@ import {
   getAvailableTimeslots,
   type TimeSlot,
   type TimeRange,
-} from '../../src';
+} from 'availability-js';
 
 type Mode = 'windows' | 'slots';
 
